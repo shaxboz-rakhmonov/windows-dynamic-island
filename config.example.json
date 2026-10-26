@@ -1,0 +1,9 @@
+{
+  "weather": { "lat": 51.5074, "lon": -0.1278, "city": "London" },
+  "server": {
+    "name": "My server",
+    "url": "https://example.com/status.json",
+    "header": "x-api-key",
+    "key": "YOUR_KEY"
+  }
+}
