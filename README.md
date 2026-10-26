@@ -26,6 +26,7 @@
 - **System** — live CPU / RAM / disk load and uptime.
 - **Your server status (optional)** — point it at any JSON endpoint and see load, services up/down and errors. A green/red dot sits in the collapsed pill.
 - **📌 Pin window** — a pushpin button next to the media controls keeps the window you were just using on top of all others (click again to release).
+- **Claude usage rings (optional)** — your Claude Pro/Max 5-hour and weekly limits as two rings on the main page (see [Claude limits](#-claude-limits-optional)). Hidden if you don't use it.
 - **4 pages**: everything-in-one · music · calendar · system. Switch with the **mouse wheel**, by **dragging left/right**, or with the dots.
 - **Polite**: hover to open, click anywhere else (even on the desktop) to close. It can't be closed by accident — to quit run `stop.ps1`, to remove it run `uninstall.ps1`.
 - **Zero install** — a single PowerShell script (WPF). No .NET SDK, no Node, no Python, no admin rights.
@@ -65,6 +66,16 @@ powershell -ExecutionPolicy Bypass -File update.ps1
 ```
 
 (Or just download the ZIP again and replace the files.) Updates are never installed silently — you decide when to run it. See [Releases](../../releases) for what changed.
+
+## 🤖 Claude limits (optional)
+
+If you use Claude Code with a Pro/Max plan, the island can show your 5-hour and weekly usage as rings. In `~/.claude/settings.json` (Windows: `%USERPROFILE%\.claude\settings.json`) add:
+
+```json
+{ "statusLine": { "type": "command", "command": "node C:\\Tools\\DynamicIsland\\claude-limits.cjs" } }
+```
+
+(use the real path to `claude-limits.cjs`; Node.js required). After your next Claude Code reply the file `~/.claude/island-limits.json` appears and the rings show up after restarting the island. Custom file: `"claude": { "limitsFile": "D:\\path\\limits.json" }` in `config.json`.
 
 ## 🖱️ Controls
 

@@ -10,6 +10,8 @@ if(-not $cfg){ $cfg = [pscustomobject]@{} }
 $ru = (Get-UICulture).Name -like 'ru*'
 $TR = @{ nothing=$(if($ru){$TR.nothing}else{'Nothing playing'}); sys=$(if($ru){'СИСТЕМА'}else{'SYSTEM'}); wind=$(if($ru){'ветер'}else{'wind'}); ms=$(if($ru){'м/с'}else{'m/s'}); up=$(if($ru){'Работает'}else{'Uptime'}); d=$(if($ru){'д'}else{'d'}); h=$(if($ru){'ч'}else{'h'}); noconn=$(if($ru){'нет связи с сервером'}else{'server unreachable'}); load=$(if($ru){'Нагрузка'}else{'CPU'}); mem=$(if($ru){'память'}else{'RAM'}); disk=$(if($ru){'диск'}else{'disk'}); errs=$(if($ru){'Ошибок'}else{'Errors'}) }
 $dataDir = $PSScriptRoot
+$limFile = $(if($cfg.claude.limitsFile){ $cfg.claude.limitsFile } else { Join-Path $env:USERPROFILE '.claude\island-limits.json' })
+$script:hasClaude = Test-Path $limFile
 # --- музыка (WinRT: что играет в системе)
 $null=[Windows.Media.Control.GlobalSystemMediaTransportControlsSessionManager,Windows.Media.Control,ContentType=WindowsRuntime]
 $null=[Windows.Storage.Streams.DataReader,Windows.Storage.Streams,ContentType=WindowsRuntime]
@@ -75,6 +77,11 @@ $xaml=@'
       <TextBlock Text="RAM" Grid.Row="1" Foreground="#FF6FE08A" FontSize="11" VerticalAlignment="Center"/><ProgressBar Name="aRam" Grid.Row="1" Grid.Column="1" Height="5" Maximum="100" Foreground="#FF4CD964" Background="#22FFFFFF" BorderThickness="0"/><TextBlock Name="aRamV" Grid.Row="1" Grid.Column="2" Foreground="White" FontSize="11" Margin="8,0,0,0" VerticalAlignment="Center"/>
       <TextBlock Text="DISK" Grid.Row="2" Foreground="#FFFFB066" FontSize="11" VerticalAlignment="Center"/><ProgressBar Name="aDisk" Grid.Row="2" Grid.Column="1" Height="5" Maximum="100" Foreground="#FFFFA040" Background="#22FFFFFF" BorderThickness="0"/><TextBlock Name="aDiskV" Grid.Row="2" Grid.Column="2" Foreground="White" FontSize="11" Margin="8,0,0,0" VerticalAlignment="Center"/>
       </Grid>
+     <Rectangle Name="clSep" Grid.Column="5" Width="1" Fill="#33FFFFFF" Margin="14,6" Visibility="Collapsed"/>
+     <StackPanel Name="clBox" Grid.Column="6" Orientation="Horizontal" VerticalAlignment="Center" Visibility="Collapsed">
+      <StackPanel Margin="0,0,14,0"><Grid Width="56" Height="56"><Ellipse Width="50" Height="50" Stroke="#22FFFFFF" StrokeThickness="6"/><Ellipse Name="ring5" Width="50" Height="50" Stroke="#FF34D399" StrokeThickness="6" RenderTransformOrigin="0.5,0.5"><Ellipse.RenderTransform><RotateTransform Angle="-90"/></Ellipse.RenderTransform></Ellipse><TextBlock Name="a5V" Foreground="White" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center"/></Grid><TextBlock Text="CLAUDE 5h" Foreground="#FF8E8E99" FontSize="10" HorizontalAlignment="Center" Margin="0,2,0,0"/></StackPanel>
+      <StackPanel Margin="0,0,0,0"><Grid Width="56" Height="56"><Ellipse Width="50" Height="50" Stroke="#22FFFFFF" StrokeThickness="6"/><Ellipse Name="ring7" Width="50" Height="50" Stroke="#FF34D399" StrokeThickness="6" RenderTransformOrigin="0.5,0.5"><Ellipse.RenderTransform><RotateTransform Angle="-90"/></Ellipse.RenderTransform></Ellipse><TextBlock Name="a7V" Foreground="White" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center"/></Grid><TextBlock Text="week" Foreground="#FF8E8E99" FontSize="10" HorizontalAlignment="Center" Margin="0,2,0,0"/></StackPanel>
+     </StackPanel>
     </Grid>
     <Grid Name="p1" Visibility="Collapsed">
      <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
@@ -139,7 +146,7 @@ $xaml=@'
 </Window>
 '@
 $w=[Windows.Markup.XamlReader]::Parse($xaml)
-$c=@{}; 'tSrvTitle','fLS','fRS','shT','pgS','fL','fR','isl','cmp','pg','p0','p1','p2','p3','dots','dA','d1','d2','d3','aArt','aTitle','aArtist','aPos','aPrev','aPlay','aNext','aPin','bPin','aWeek','aMonth','aDate','aTime','aWx','aCpu','aCpuV','aRam','aRamV','aDisk','aDiskV','dot','cTime','cWx','cTrack','cArt','art','tTitle','tArtist','pPos','bPrev','bPlay','bNext','tTime','tWx','calM','cal','calD','calW','calX','pCpu','pRam','pDisk','vCpu','vRam','vDisk','tSrv','tSvc' | % { $c[$_]=$w.FindName($_) }
+$c=@{}; 'clSep','clBox','ring5','ring7','a5V','a7V','tSrvTitle','fLS','fRS','shT','pgS','fL','fR','isl','cmp','pg','p0','p1','p2','p3','dots','dA','d1','d2','d3','aArt','aTitle','aArtist','aPos','aPrev','aPlay','aNext','aPin','bPin','aWeek','aMonth','aDate','aTime','aWx','aCpu','aCpuV','aRam','aRamV','aDisk','aDiskV','dot','cTime','cWx','cTrack','cArt','art','tTitle','tArtist','pPos','bPrev','bPlay','bNext','tTime','tWx','calM','cal','calD','calW','calX','pCpu','pRam','pDisk','vCpu','vRam','vDisk','tSrv','tSvc' | % { $c[$_]=$w.FindName($_) }
 function Place { $a=[System.Windows.SystemParameters]::WorkArea; $w.Left=$a.Left+($a.Width-$w.Width)/2; $w.Top=$a.Top }
 Place
 
@@ -187,7 +194,7 @@ $spring=New-Object "$ns.BackEase"; $spring.Amplitude=0.14; $spring.EasingMode='E
 $soft=New-Object "$ns.CubicEase"; $soft.EasingMode='EaseInOut'
 $W_=[Windows.FrameworkElement]::WidthProperty; $H_=[Windows.FrameworkElement]::HeightProperty; $O_=[Windows.UIElement]::OpacityProperty
 $SX_=[Windows.Media.ScaleTransform]::ScaleXProperty; $SY_=[Windows.Media.ScaleTransform]::ScaleYProperty; $Y_=[Windows.Media.TranslateTransform]::YProperty
-$sizes=@( @(1010,132), @(580,152), @(560,224), @(560,160) ); $script:page=0; $script:open=$false
+$sizes=@( @($(if($script:hasClaude){1130}else{1010}),132), @(580,152), @(560,224), @(560,160) ); $script:page=0; $script:open=$false
 function AnimR($prop,$to,$ms,$ease,$delay,$target){
   $a=New-Object "$ns.DoubleAnimation"; $a.To=$to; $a.Duration=[TimeSpan]::FromMilliseconds($ms); $a.BeginTime=[TimeSpan]::FromMilliseconds($delay); $a.EasingFunction=$ease; $a.AutoReverse=$true
   $target.BeginAnimation($prop,$a) }
@@ -291,6 +298,20 @@ function Tick {
     try{ $tl=$s.GetTimelineProperties(); if($tl.EndTime.TotalSeconds -gt 0){ $c.pPos.Value=1000*$tl.Position.TotalSeconds/$tl.EndTime.TotalSeconds; $c.aPos.Value=$c.pPos.Value } }catch{}
   } else { $c.tTitle.Text=$TR.nothing; $c.aTitle.Text=$TR.nothing; $c.aArtist.Text=''; $c.tArtist.Text=''; $c.cTrack.Text=$TR.nothing }
 }
+# Optional Claude usage rings (5-hour and weekly limits). Shown only if the limits file exists —
+# see "Claude limits" in the README (claude-limits.cjs writes it from the Claude Code status line).
+if($script:hasClaude){ $c.clSep.Visibility='Visible'; $c.clBox.Visibility='Visible' }
+function Ring($n,$pc){ $e=$c["ring$n"]; $f=[math]::Max(0.001,$pc/100*[math]::PI*50/6)
+  $e.StrokeDashArray=[Windows.Media.DoubleCollection]::new([double[]]@($f,100)); $c["a${n}V"].Text="$pc%"
+  $col=if($pc -ge 100){'#FFFF5A5A'}elseif($pc -ge 90){'#FFFFA040'}elseif($pc -ge 70){'#FFFBBF24'}else{'#FF34D399'}
+  $e.Stroke=[Windows.Media.BrushConverter]::new().ConvertFromString($col) }
+function Lim {
+  if(-not $script:hasClaude){ return }
+  try{ $j=Get-Content $limFile -Raw | ConvertFrom-Json
+    foreach($k in @(@('fiveHour','5'),@('sevenDay','7'))){ $x=$j.($k[0]); $n=$k[1]
+      if($x -and $x.pct -ne $null -and ([DateTime]$x.resetsAt).ToLocalTime() -gt (Get-Date)){ Ring $n ([int]$x.pct) }
+      else { $c["a${n}V"].Text='--'; $c["ring$n"].StrokeDashArray=[Windows.Media.DoubleCollection]::new([double[]]@(0.001,100)) } }
+  }catch{} }
 function Wx {
   try{ if(-not $st.wx){ return }; $r=$st.wx | ConvertFrom-Json
     $k=[int]$r.code; $ic=if($k -eq 0){if($r.isDay){'☀'}else{'🌙'}}elseif($k -le 2){'⛅'}elseif($k -eq 3){'☁'}elseif($k -ge 95){'⛈'}elseif(($k -ge 71 -and $k -le 77) -or ($k -ge 85 -and $k -le 86)){'❄'}elseif($k -ge 45 -and $k -le 48){'🌫'}else{'🌧'}
@@ -310,7 +331,7 @@ function Srv {
     $c.tSrv.Foreground=$(if($ok){'#FF7AF2A0'}else{'#FFFF7A7A'}); $c.dot.Fill=$(if($ok){'#FF34D399'}else{'#FFFF5A5A'})
   }catch{ $c.tSrv.Text=$TR.noconn; $c.tSrv.Foreground='#FFFF7A7A'; $c.dot.Fill='#FFFF5A5A' } }
 $t1=New-Object Windows.Threading.DispatcherTimer; $t1.Interval=[TimeSpan]::FromSeconds(2); $t1.Add_Tick({ Tick }); $t1.Start()
-$t2=New-Object Windows.Threading.DispatcherTimer; $t2.Interval=[TimeSpan]::FromSeconds(3); $t2.Add_Tick({ Srv; Wx; if($script:open){ Stats } }); $t2.Start()
-Tick; Srv; Wx
+$t2=New-Object Windows.Threading.DispatcherTimer; $t2.Interval=[TimeSpan]::FromSeconds(3); $t2.Add_Tick({ Srv; Wx; Lim; if($script:open){ Stats } }); $t2.Start()
+Tick; Srv; Wx; Lim
 $w.Add_ContentRendered({ $d=New-Object System.Windows.Media.Animation.DoubleAnimation; $d.To=0; $d.Duration=[TimeSpan]::FromMilliseconds(700); $d.EasingFunction=$spring; $c.shT.BeginAnimation($Y_,$d) })
 $null=$w.ShowDialog()
