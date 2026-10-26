@@ -228,7 +228,6 @@ $c.isl.Add_MouseLeftButtonDown({ $script:dx=$_.GetPosition($c.isl).X })
 $c.isl.Add_MouseLeftButtonUp({ $script:dx=$null })
 $c.isl.Add_MouseMove({ if($script:dx -ne $null -and $_.LeftButton -eq 'Pressed' -and $script:open){ $x=$_.GetPosition($c.isl).X
   if($x-$script:dx -gt 70){ $script:dx=$x; Go ($script:page-1) } elseif($script:dx-$x -gt 70){ $script:dx=$x; Go ($script:page+1) } } })
-$c.isl.Add_MouseRightButtonUp({ $w.Close() })
 $c.dA.Add_MouseLeftButtonUp({ Go 0 }); $c.d1.Add_MouseLeftButtonUp({ Go 1 }); $c.d2.Add_MouseLeftButtonUp({ Go 2 }); $c.d3.Add_MouseLeftButtonUp({ Go 3 })
 function Peek($sec){ Expand; $hide.Stop(); $hide.Interval=[TimeSpan]::FromSeconds($sec); $hide.Start() }
 function Sess { if($mgr){ $mgr.GetCurrentSession() } }

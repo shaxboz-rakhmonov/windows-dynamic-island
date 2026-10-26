@@ -27,7 +27,7 @@
 - **Your server status (optional)** — point it at any JSON endpoint and see load, services up/down and errors. A green/red dot sits in the collapsed pill.
 - **📌 Pin window** — a pushpin button next to the media controls keeps the window you were just using on top of all others (click again to release).
 - **4 pages**: everything-in-one · music · calendar · system. Switch with the **mouse wheel**, by **dragging left/right**, or with the dots.
-- **Polite**: hover to open, click anywhere else (even on the desktop) to close. Right-click to quit.
+- **Polite**: hover to open, click anywhere else (even on the desktop) to close. It can't be closed by accident — to quit run `stop.ps1`, to remove it run `uninstall.ps1`.
 - **Zero install** — a single PowerShell script (WPF). No .NET SDK, no Node, no Python, no admin rights.
 - Russian / English UI, picked from your Windows language.
 
@@ -76,7 +76,6 @@ powershell -ExecutionPolicy Bypass -File update.ps1
 | Click the dots | Jump to a page |
 | Click anywhere outside | Collapses |
 | Click the 📌 pushpin | Pin / unpin the last active window on top of all windows |
-| Right-click the pill | Quit |
 
 ## ⚙️ Configuration
 
@@ -136,7 +135,7 @@ If you like it, give it a ⭐ — it helps others find it.
 powershell -ExecutionPolicy Bypass -File install.ps1
 ```
 
-Плашка появится сверху и будет запускаться вместе с Windows. Управление: навести — раскрывается, колёсико или перетаскивание — страницы, клик в любое другое место — сворачивается, правая кнопка — выход. Настройки (город, свой сервер) — в `config.json`, пример в `config.example.json`. Ключи храните только там — файл не попадает в git.
+Плашка появится сверху и будет запускаться вместе с Windows. Управление: навести — раскрывается, колёсико или перетаскивание — страницы, клик в любое другое место — сворачивается, случайно закрыть нельзя (правая кнопка ничего не делает); остановить — `stop.ps1`, удалить — `uninstall.ps1`. Настройки (город, свой сервер) — в `config.json`, пример в `config.example.json`. Ключи храните только там — файл не попадает в git.
 
 **Булавка 📌** рядом с кнопками музыки закрепляет последнее активное окно поверх всех остальных (ещё раз — открепляет).
 
