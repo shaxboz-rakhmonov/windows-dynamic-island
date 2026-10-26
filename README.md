@@ -25,6 +25,7 @@
 - **Weather** — current temperature and wind from [Open-Meteo](https://open-meteo.com) (no API key). Location is detected by IP or set manually.
 - **System** — live CPU / RAM / disk load and uptime.
 - **Your server status (optional)** — point it at any JSON endpoint and see load, services up/down and errors. A green/red dot sits in the collapsed pill.
+- **📌 Pin window** — a pushpin button next to the media controls keeps the window you were just using on top of all others (click again to release).
 - **4 pages**: everything-in-one · music · calendar · system. Switch with the **mouse wheel**, by **dragging left/right**, or with the dots.
 - **Polite**: hover to open, click anywhere else (even on the desktop) to close. Right-click to quit.
 - **Zero install** — a single PowerShell script (WPF). No .NET SDK, no Node, no Python, no admin rights.
@@ -55,6 +56,16 @@ Uninstall: `powershell -ExecutionPolicy Bypass -File uninstall.ps1`
 
 **Requirements:** Windows 10 (1809+) or Windows 11, PowerShell 5.1 (built in).
 
+### 🔄 Update
+
+Run `update.ps1` from the install folder — it downloads the latest `DynamicIsland.ps1` from this repo, checks that it is valid, restarts the island and leaves your `config.json` untouched:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File update.ps1
+```
+
+(Or just download the ZIP again and replace the files.) Updates are never installed silently — you decide when to run it. See [Releases](../../releases) for what changed.
+
 ## 🖱️ Controls
 
 | Action | Result |
@@ -64,6 +75,7 @@ Uninstall: `powershell -ExecutionPolicy Bypass -File uninstall.ps1`
 | Drag left / right | Switch page |
 | Click the dots | Jump to a page |
 | Click anywhere outside | Collapses |
+| Click the 📌 pushpin | Pin / unpin the last active window on top of all windows |
 | Right-click the pill | Quit |
 
 ## ⚙️ Configuration
@@ -125,5 +137,9 @@ powershell -ExecutionPolicy Bypass -File install.ps1
 ```
 
 Плашка появится сверху и будет запускаться вместе с Windows. Управление: навести — раскрывается, колёсико или перетаскивание — страницы, клик в любое другое место — сворачивается, правая кнопка — выход. Настройки (город, свой сервер) — в `config.json`, пример в `config.example.json`. Ключи храните только там — файл не попадает в git.
+
+**Булавка 📌** рядом с кнопками музыки закрепляет последнее активное окно поверх всех остальных (ещё раз — открепляет).
+
+**Обновление:** запустите `update.ps1` — он скачает свежую версию из репозитория, проверит файл, перезапустит остров; `config.json` не трогает. Тихо само ничего не ставится.
 
 Никаких зависимостей: один скрипт PowerShell, права администратора не нужны.

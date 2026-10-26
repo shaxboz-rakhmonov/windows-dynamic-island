@@ -50,6 +50,7 @@ $xaml=@'
         <Path Name="aPrev" Width="22" Height="22" Stretch="Uniform" Fill="White" Data="M6,5 H8.5 V19 H6 Z M20,5 V19 L9.5,12 Z" Cursor="Hand" VerticalAlignment="Center" Margin="0,0,22,0"/>
         <Path Name="aPlay" Width="26" Height="26" Stretch="Uniform" Fill="White" Data="M7,4 V20 L20,12 Z" Cursor="Hand" VerticalAlignment="Center" Margin="0,0,22,0"/>
         <Path Name="aNext" Width="22" Height="22" Stretch="Uniform" Fill="White" Data="M15.5,5 H18 V19 H15.5 Z M4,5 V19 L14.5,12 Z" Cursor="Hand" VerticalAlignment="Center"/>
+        <Path Name="aPin" Width="20" Height="20" Stretch="Uniform" Fill="#66FFFFFF" Data="M16,12V4H17V2H7V4H8V12L6,14V16H11.2V22H12.8V16H18V14L16,12Z" Cursor="Hand" ToolTip="Pin the active window on top of all windows" VerticalAlignment="Center" Margin="26,0,0,0"/>
        </StackPanel>
       </StackPanel>
      </StackPanel>
@@ -87,6 +88,7 @@ $xaml=@'
         <Path Name="bPrev" Width="24" Height="24" Stretch="Uniform" Fill="White" Data="M6,5 H8.5 V19 H6 Z M20,5 V19 L9.5,12 Z" Cursor="Hand" VerticalAlignment="Center" Margin="0,0,26,0"/>
         <Path Name="bPlay" Width="28" Height="28" Stretch="Uniform" Fill="White" Data="M7,4 V20 L20,12 Z" Cursor="Hand" VerticalAlignment="Center" Margin="0,0,26,0"/>
         <Path Name="bNext" Width="24" Height="24" Stretch="Uniform" Fill="White" Data="M15.5,5 H18 V19 H15.5 Z M4,5 V19 L14.5,12 Z" Cursor="Hand" VerticalAlignment="Center"/>
+        <Path Name="bPin" Width="20" Height="20" Stretch="Uniform" Fill="#66FFFFFF" Data="M16,12V4H17V2H7V4H8V12L6,14V16H11.2V22H12.8V16H18V14L16,12Z" Cursor="Hand" ToolTip="Pin the active window on top of all windows" VerticalAlignment="Center" Margin="26,0,0,0"/>
        </StackPanel>
       </Grid>
      </StackPanel>
@@ -137,7 +139,7 @@ $xaml=@'
 </Window>
 '@
 $w=[Windows.Markup.XamlReader]::Parse($xaml)
-$c=@{}; 'tSrvTitle','fLS','fRS','shT','pgS','fL','fR','isl','cmp','pg','p0','p1','p2','p3','dots','dA','d1','d2','d3','aArt','aTitle','aArtist','aPos','aPrev','aPlay','aNext','aWeek','aMonth','aDate','aTime','aWx','aCpu','aCpuV','aRam','aRamV','aDisk','aDiskV','dot','cTime','cWx','cTrack','cArt','art','tTitle','tArtist','pPos','bPrev','bPlay','bNext','tTime','tWx','calM','cal','calD','calW','calX','pCpu','pRam','pDisk','vCpu','vRam','vDisk','tSrv','tSvc' | % { $c[$_]=$w.FindName($_) }
+$c=@{}; 'tSrvTitle','fLS','fRS','shT','pgS','fL','fR','isl','cmp','pg','p0','p1','p2','p3','dots','dA','d1','d2','d3','aArt','aTitle','aArtist','aPos','aPrev','aPlay','aNext','aPin','bPin','aWeek','aMonth','aDate','aTime','aWx','aCpu','aCpuV','aRam','aRamV','aDisk','aDiskV','dot','cTime','cWx','cTrack','cArt','art','tTitle','tArtist','pPos','bPrev','bPlay','bNext','tTime','tWx','calM','cal','calD','calW','calX','pCpu','pRam','pDisk','vCpu','vRam','vDisk','tSrv','tSvc' | % { $c[$_]=$w.FindName($_) }
 function Place { $a=[System.Windows.SystemParameters]::WorkArea; $w.Left=$a.Left+($a.Width-$w.Width)/2; $w.Top=$a.Top }
 Place
 
@@ -235,6 +237,14 @@ $c.bPlay.Add_MouseLeftButtonUp({ $s=Sess; if($s){ $s.TryTogglePlayPauseAsync()|O
 $c.bNext.Add_MouseLeftButtonUp({ $s=Sess; if($s){ $s.TrySkipNextAsync()|Out-Null } })
 $c.aPrev.Add_MouseLeftButtonUp({ $s=Sess; if($s){ $s.TrySkipPreviousAsync()|Out-Null } })
 $c.aPlay.Add_MouseLeftButtonUp({ $s=Sess; if($s){ $s.TryTogglePlayPauseAsync()|Out-Null } })
+# Pin the last active window on top of all windows (pushpin button)
+Add-Type -Namespace U -Name P -MemberDefinition '[DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow(); [DllImport("user32.dll")] public static extern bool SetWindowPos(IntPtr h, IntPtr a, int x, int y, int cx, int cy, uint f); [DllImport("user32.dll")] public static extern int GetWindowLong(IntPtr h, int i); [DllImport("user32.dll")] public static extern bool IsWindow(IntPtr h);' -ErrorAction Continue
+$script:me=(New-Object Windows.Interop.WindowInteropHelper($w)).Handle; $script:lastFg=[IntPtr]::Zero
+function PinState { if($script:lastFg -ne [IntPtr]::Zero -and [U.P]::IsWindow($script:lastFg) -and (([U.P]::GetWindowLong($script:lastFg,-20) -band 8) -ne 0)){ $f='#FFFFC83D' } else { $f='#66FFFFFF' }; $c.aPin.Fill=$f; $c.bPin.Fill=$f }
+function PinToggle { $h=$script:lastFg; if($h -eq [IntPtr]::Zero -or -not [U.P]::IsWindow($h)){ return }
+  $top=(([U.P]::GetWindowLong($h,-20) -band 8) -ne 0); $ins=$(if($top){[IntPtr](-2)}else{[IntPtr](-1)})
+  [U.P]::SetWindowPos($h,$ins,0,0,0,0,0x0053)|Out-Null; PinState }
+$c.aPin.Add_MouseLeftButtonUp({ PinToggle }); $c.bPin.Add_MouseLeftButtonUp({ PinToggle })
 $c.aNext.Add_MouseLeftButtonUp({ $s=Sess; if($s){ $s.TrySkipNextAsync()|Out-Null } })
 $ru=[Globalization.CultureInfo]::GetCultureInfo('ru-RU'); $script:wkDay=$null
 function BuildCal($n){
@@ -259,6 +269,7 @@ function Stats { if($st.cpu -ne $null){ $cpu=$st.cpu;$ram=$st.ram;$disk=$st.disk
 $script:lastTrack=''
 $geoPlay=[Windows.Media.Geometry]::Parse('M7,4 V20 L20,12 Z'); $geoPause=[Windows.Media.Geometry]::Parse('M6,4 H10 V20 H6 Z M14,4 H18 V20 H14 Z')
 function Tick {
+  $fg=[U.P]::GetForegroundWindow(); if($fg -ne [IntPtr]::Zero -and $fg -ne $script:me){ $script:lastFg=$fg; PinState }
   if(Test-Path "$dataDir\cmd.txt"){ $q=(Get-Content "$dataDir\cmd.txt" -Raw).Trim(); Remove-Item "$dataDir\cmd.txt"; if($q -eq 'close'){ Collapse } elseif($q -match '^\d$'){ Show-Page ([int]$q); $script:open=$false; Expand; $hide.Stop() } }
   $n=Get-Date; $hm=$n.ToString('HH:mm'); $c.tTime.Text=$hm; $c.cTime.Text=$hm; $c.aTime.Text=$hm
   if($script:wkDay -ne $n.Date){ $script:wkDay=$n.Date; BuildCal $n; BuildWeek $n; $c.aMonth.Text=$n.ToString('MMMM yyyy',$ru); $c.aDate.Text=$n.ToString('ddd, d MMM',$ru); $c.calD.Text=$n.ToString('d MMMM',$ru); $c.calW.Text=$n.ToString('dddd',$ru) }
