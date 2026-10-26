@@ -59,7 +59,13 @@ Uninstall: `powershell -ExecutionPolicy Bypass -File uninstall.ps1`
 
 ### 🔄 Update
 
-Run `update.ps1` from the install folder — it downloads the latest `DynamicIsland.ps1` from this repo, checks that it is valid, restarts the island and leaves your `config.json` untouched:
+**One command (works even if your version has no `update.ps1` yet)** — open PowerShell in the install folder and paste:
+
+```powershell
+iwr https://raw.githubusercontent.com/shaxboz-rakhmonov/windows-dynamic-island/main/update.ps1 -OutFile update.ps1; powershell -ExecutionPolicy Bypass -File update.ps1
+```
+
+Later just run `update.ps1`. Details: Run `update.ps1` from the install folder — it downloads the latest `DynamicIsland.ps1` from this repo, checks that it is valid, restarts the island and leaves your `config.json` untouched:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File update.ps1
