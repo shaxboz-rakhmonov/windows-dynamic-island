@@ -69,7 +69,9 @@ powershell -ExecutionPolicy Bypass -File update.ps1
 
 ## 🤖 Claude limits (optional)
 
-If you use Claude Code with a Pro/Max plan, the island can show your 5-hour and weekly usage as rings. In `~/.claude/settings.json` (Windows: `%USERPROFILE%\.claude\settings.json`) add:
+**Quick way:** `powershell -ExecutionPolicy Bypass -File setup-claude.ps1` (needs Node.js; backs up your settings), then restart Claude Code, send a message and restart the island. Rings showing `--` = your plan doesn't expose limits (only Pro/Max do).
+
+Manual way — if you use Claude Code with a Pro/Max plan, the island can show your 5-hour and weekly usage as rings. In `~/.claude/settings.json` (Windows: `%USERPROFILE%\.claude\settings.json`) add:
 
 ```json
 { "statusLine": { "type": "command", "command": "node C:\\Tools\\DynamicIsland\\claude-limits.cjs" } }

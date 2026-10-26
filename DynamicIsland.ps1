@@ -11,7 +11,7 @@ $ru = (Get-UICulture).Name -like 'ru*'
 $TR = @{ nothing=$(if($ru){$TR.nothing}else{'Nothing playing'}); sys=$(if($ru){'СИСТЕМА'}else{'SYSTEM'}); wind=$(if($ru){'ветер'}else{'wind'}); ms=$(if($ru){'м/с'}else{'m/s'}); up=$(if($ru){'Работает'}else{'Uptime'}); d=$(if($ru){'д'}else{'d'}); h=$(if($ru){'ч'}else{'h'}); noconn=$(if($ru){'нет связи с сервером'}else{'server unreachable'}); load=$(if($ru){'Нагрузка'}else{'CPU'}); mem=$(if($ru){'память'}else{'RAM'}); disk=$(if($ru){'диск'}else{'disk'}); errs=$(if($ru){'Ошибок'}else{'Errors'}) }
 $dataDir = $PSScriptRoot
 $limFile = $(if($cfg.claude.limitsFile){ $cfg.claude.limitsFile } else { Join-Path $env:USERPROFILE '.claude\island-limits.json' })
-$script:hasClaude = Test-Path $limFile
+$script:hasClaude = (Test-Path $limFile) -or (Test-Path (Join-Path $env:USERPROFILE '.claude'))
 # --- музыка (WinRT: что играет в системе)
 $null=[Windows.Media.Control.GlobalSystemMediaTransportControlsSessionManager,Windows.Media.Control,ContentType=WindowsRuntime]
 $null=[Windows.Storage.Streams.DataReader,Windows.Storage.Streams,ContentType=WindowsRuntime]
@@ -311,7 +311,7 @@ function Lim {
     foreach($k in @(@('fiveHour','5'),@('sevenDay','7'))){ $x=$j.($k[0]); $n=$k[1]
       if($x -and $x.pct -ne $null -and ([DateTime]$x.resetsAt).ToLocalTime() -gt (Get-Date)){ Ring $n ([int]$x.pct) }
       else { $c["a${n}V"].Text='--'; $c["ring$n"].StrokeDashArray=[Windows.Media.DoubleCollection]::new([double[]]@(0.001,100)) } }
-  }catch{} }
+  }catch{ $c.a5V.Text='--'; $c.a7V.Text='--' } }
 function Wx {
   try{ if(-not $st.wx){ return }; $r=$st.wx | ConvertFrom-Json
     $k=[int]$r.code; $ic=if($k -eq 0){if($r.isDay){'☀'}else{'🌙'}}elseif($k -le 2){'⛅'}elseif($k -eq 3){'☁'}elseif($k -ge 95){'⛈'}elseif(($k -ge 71 -and $k -le 77) -or ($k -ge 85 -and $k -le 86)){'❄'}elseif($k -ge 45 -and $k -le 48){'🌫'}else{'🌧'}
