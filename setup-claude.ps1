@@ -12,4 +12,4 @@ $sl = [pscustomobject]@{ type = 'command'; command = "node `"$js`"" }
 if ($o.PSObject.Properties['statusLine']) { $o.statusLine = $sl } else { $o | Add-Member -NotePropertyName statusLine -NotePropertyValue $sl }
 $o | ConvertTo-Json -Depth 20 | Set-Content $f -Encoding UTF8
 Write-Host 'Done. Restart Claude Code, send any message, then restart the island (stop.ps1, then Start-ScheduledTask WinDynamicIsland). The rings will show your 5-hour and weekly usage.'
-Write-Host 'If the rings stay on "--": the limits only exist for Claude Pro/Max subscriptions — that is the "works / does not work" check.'
+Write-Host 'If the rings stay on "--": the limits only exist for Claude Pro/Max subscriptions - that is the "works / does not work" check.'
