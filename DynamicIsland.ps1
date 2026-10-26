@@ -305,8 +305,14 @@ function Ring($n,$pc){ $e=$c["ring$n"]; $f=[math]::Max(0.001,$pc/100*[math]::PI*
   $e.StrokeDashArray=[Windows.Media.DoubleCollection]::new([double[]]@($f,100)); $c["a${n}V"].Text="$pc%"
   $col=if($pc -ge 100){'#FFFF5A5A'}elseif($pc -ge 90){'#FFFFA040'}elseif($pc -ge 70){'#FFFBBF24'}else{'#FF34D399'}
   $e.Stroke=[Windows.Media.BrushConverter]::new().ConvertFromString($col) }
+function ClaudeTip {
+  $set=Join-Path $env:USERPROFILE '.claude\settings.json'
+  if(-not (Test-Path $set) -or -not ((Get-Content $set -Raw) -match 'claude-limits')){ return 'Claude limits are not set up. Run setup-claude.ps1 (in the island folder), then restart Claude Code and the island.' }
+  if(-not (Test-Path $limFile)){ return 'Waiting for data. Open Claude Code in a terminal (command: claude) and send any message. The Claude desktop app does not provide limits, and they exist only for Pro/Max plans.' }
+  return 'Claude usage: 5-hour and weekly limits' }
 function Lim {
   if(-not $script:hasClaude){ return }
+  $c.clBox.ToolTip=ClaudeTip
   try{ $j=Get-Content $limFile -Raw | ConvertFrom-Json
     foreach($k in @(@('fiveHour','5'),@('sevenDay','7'))){ $x=$j.($k[0]); $n=$k[1]
       if($x -and $x.pct -ne $null -and ([DateTime]$x.resetsAt).ToLocalTime() -gt (Get-Date)){ Ring $n ([int]$x.pct) }

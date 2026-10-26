@@ -10,6 +10,7 @@ foreach ($f in $files | Where-Object { $_ -like '*.ps1' }) { $err = $null; [void
 Get-CimInstance Win32_Process -Filter "Name='powershell.exe'" | Where-Object { $_.CommandLine -like '*DynamicIsland.ps1*' -and $_.ProcessId -ne $PID } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }
 foreach ($f in $files) { Copy-Item (Join-Path $tmpDir $f) (Join-Path $dir $f) -Force }
 Remove-Item $tmpDir -Recurse -Force
+try { if ((Test-Path (Join-Path $env:USERPROFILE '.claude')) -and (Get-Command node -ErrorAction SilentlyContinue)) { & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $dir 'setup-claude.ps1') } } catch {}
 if (Get-ScheduledTask -TaskName 'WinDynamicIsland' -ErrorAction SilentlyContinue) { Start-ScheduledTask -TaskName 'WinDynamicIsland' }
 else { Start-Process powershell -WindowStyle Hidden -ArgumentList "-NoProfile -STA -ExecutionPolicy Bypass -File `"$dir\DynamicIsland.ps1`"" }
 Write-Host 'Updated to the latest version. Your config.json is untouched.'

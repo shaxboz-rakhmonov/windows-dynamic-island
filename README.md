@@ -75,6 +75,8 @@ powershell -ExecutionPolicy Bypass -File update.ps1
 
 ## 🤖 Claude limits (optional)
 
+**Hover the rings** — the tooltip tells you exactly what is missing. `install.ps1` / `update.ps1` set this up automatically when Claude Code and Node.js are installed. **Important:** limits come from **Claude Code in a terminal (`claude`)** — the Claude desktop app does not expose them, and they exist only on Pro/Max plans.
+
 **Quick way:** `powershell -ExecutionPolicy Bypass -File setup-claude.ps1` (needs Node.js; backs up your settings), then restart Claude Code, send a message and restart the island. Rings showing `--` = your plan doesn't expose limits (only Pro/Max do).
 
 Manual way — if you use Claude Code with a Pro/Max plan, the island can show your 5-hour and weekly usage as rings. In `~/.claude/settings.json` (Windows: `%USERPROFILE%\.claude\settings.json`) add:
