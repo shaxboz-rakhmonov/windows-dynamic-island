@@ -269,6 +269,7 @@ $script:lastTrack=''
 $geoPlay=[Windows.Media.Geometry]::Parse('M7,4 V20 L20,12 Z'); $geoPause=[Windows.Media.Geometry]::Parse('M6,4 H10 V20 H6 Z M14,4 H18 V20 H14 Z')
 function Tick {
   $fg=[U.P]::GetForegroundWindow(); if($fg -ne [IntPtr]::Zero -and $fg -ne $script:me){ $script:lastFg=$fg; PinState }
+  [U.P]::SetWindowPos($script:me,[IntPtr](-1),0,0,0,0,0x0013)|Out-Null   # остров всегда выше закреплённых окон
   if(Test-Path "$dataDir\cmd.txt"){ $q=(Get-Content "$dataDir\cmd.txt" -Raw).Trim(); Remove-Item "$dataDir\cmd.txt"; if($q -eq 'close'){ Collapse } elseif($q -match '^\d$'){ Show-Page ([int]$q); $script:open=$false; Expand; $hide.Stop() } }
   $n=Get-Date; $hm=$n.ToString('HH:mm'); $c.tTime.Text=$hm; $c.cTime.Text=$hm; $c.aTime.Text=$hm
   if($script:wkDay -ne $n.Date){ $script:wkDay=$n.Date; BuildCal $n; BuildWeek $n; $c.aMonth.Text=$n.ToString('MMMM yyyy',$ru); $c.aDate.Text=$n.ToString('ddd, d MMM',$ru); $c.calD.Text=$n.ToString('d MMMM',$ru); $c.calW.Text=$n.ToString('dddd',$ru) }
