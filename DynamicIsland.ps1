@@ -75,10 +75,11 @@ $xaml=@'
      <Rectangle Name="sepSys" Grid.Column="3" Width="1" Fill="#33FFFFFF" Margin="14,6"/>
      <Grid Name="sysBox" Grid.Column="4" VerticalAlignment="Center" Width="190">
       <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-      <Grid.RowDefinitions><RowDefinition Height="24"/><RowDefinition Height="24"/><RowDefinition Height="24"/></Grid.RowDefinitions>
+      <Grid.RowDefinitions><RowDefinition Height="22"/><RowDefinition Height="22"/><RowDefinition Height="22"/><RowDefinition Height="22"/></Grid.RowDefinitions>
       <TextBlock Text="CPU" Foreground="#FF6FB1FF" FontSize="11" Margin="0,0,8,0" VerticalAlignment="Center"/><ProgressBar Name="aCpu" Grid.Column="1" Height="5" Maximum="100" Foreground="#FF4C9EFF" Background="#22FFFFFF" BorderThickness="0"/><TextBlock Name="aCpuV" Grid.Column="2" Foreground="White" FontSize="11" Margin="8,0,0,0" VerticalAlignment="Center"/>
       <TextBlock Text="RAM" Grid.Row="1" Foreground="#FF6FE08A" FontSize="11" VerticalAlignment="Center"/><ProgressBar Name="aRam" Grid.Row="1" Grid.Column="1" Height="5" Maximum="100" Foreground="#FF4CD964" Background="#22FFFFFF" BorderThickness="0"/><TextBlock Name="aRamV" Grid.Row="1" Grid.Column="2" Foreground="White" FontSize="11" Margin="8,0,0,0" VerticalAlignment="Center"/>
-      <TextBlock Text="DISK" Grid.Row="2" Foreground="#FFFFB066" FontSize="11" VerticalAlignment="Center"/><ProgressBar Name="aDisk" Grid.Row="2" Grid.Column="1" Height="5" Maximum="100" Foreground="#FFFFA040" Background="#22FFFFFF" BorderThickness="0"/><TextBlock Name="aDiskV" Grid.Row="2" Grid.Column="2" Foreground="White" FontSize="11" Margin="8,0,0,0" VerticalAlignment="Center"/>
+      <TextBlock Name="aGpuL" Text="GPU" Grid.Row="2" Foreground="#FFC79BFF" FontSize="11" VerticalAlignment="Center"/><ProgressBar Name="aGpu" Grid.Row="2" Grid.Column="1" Height="5" Maximum="100" Foreground="#FFA66BFF" Background="#22FFFFFF" BorderThickness="0"/><TextBlock Name="aGpuV" Grid.Row="2" Grid.Column="2" Foreground="White" FontSize="11" Margin="8,0,0,0" VerticalAlignment="Center"/>
+      <TextBlock Text="DISK" Grid.Row="3" Foreground="#FFFFB066" FontSize="11" VerticalAlignment="Center"/><ProgressBar Name="aDisk" Grid.Row="3" Grid.Column="1" Height="5" Maximum="100" Foreground="#FFFFA040" Background="#22FFFFFF" BorderThickness="0"/><TextBlock Name="aDiskV" Grid.Row="3" Grid.Column="2" Foreground="White" FontSize="11" Margin="8,0,0,0" VerticalAlignment="Center"/>
       </Grid>
      <Rectangle Name="clSep" Grid.Column="5" Width="1" Fill="#33FFFFFF" Margin="14,6" Visibility="Collapsed"/>
      <StackPanel Name="clBox" Grid.Column="6" Orientation="Horizontal" VerticalAlignment="Center" Visibility="Collapsed">
@@ -123,10 +124,11 @@ $xaml=@'
      <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
      <Grid VerticalAlignment="Center" Margin="0,0,20,0">
       <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-      <Grid.RowDefinitions><RowDefinition Height="26"/><RowDefinition Height="26"/><RowDefinition Height="26"/></Grid.RowDefinitions>
+      <Grid.RowDefinitions><RowDefinition Height="28"/><RowDefinition Height="28"/><RowDefinition Height="28"/><RowDefinition Height="28"/></Grid.RowDefinitions>
       <TextBlock Text="CPU" Foreground="#FF6FB1FF" FontSize="12" VerticalAlignment="Center" Margin="0,0,10,0"/><ProgressBar Name="pCpu" Grid.Column="1" Height="6" Maximum="100" Foreground="#FF4C9EFF" Background="#22FFFFFF" BorderThickness="0"/><TextBlock Name="vCpu" Grid.Column="2" Foreground="White" FontSize="12" Margin="10,0,0,0" VerticalAlignment="Center"/>
       <TextBlock Text="RAM" Grid.Row="1" Foreground="#FF6FE08A" FontSize="12" VerticalAlignment="Center"/><ProgressBar Name="pRam" Grid.Row="1" Grid.Column="1" Height="6" Maximum="100" Foreground="#FF4CD964" Background="#22FFFFFF" BorderThickness="0"/><TextBlock Name="vRam" Grid.Row="1" Grid.Column="2" Foreground="White" FontSize="12" Margin="10,0,0,0" VerticalAlignment="Center"/>
-      <TextBlock Text="DISK" Grid.Row="2" Foreground="#FFFFB066" FontSize="12" VerticalAlignment="Center"/><ProgressBar Name="pDisk" Grid.Row="2" Grid.Column="1" Height="6" Maximum="100" Foreground="#FFFFA040" Background="#22FFFFFF" BorderThickness="0"/><TextBlock Name="vDisk" Grid.Row="2" Grid.Column="2" Foreground="White" FontSize="12" Margin="10,0,0,0" VerticalAlignment="Center"/>
+      <TextBlock Name="pGpuL" Text="GPU" Grid.Row="2" Foreground="#FFC79BFF" FontSize="12" VerticalAlignment="Center"/><ProgressBar Name="pGpu" Grid.Row="2" Grid.Column="1" Height="6" Maximum="100" Foreground="#FFA66BFF" Background="#22FFFFFF" BorderThickness="0"/><TextBlock Name="vGpu" Grid.Row="2" Grid.Column="2" Foreground="White" FontSize="12" Margin="10,0,0,0" VerticalAlignment="Center"/>
+      <TextBlock Text="DISK" Grid.Row="3" Foreground="#FFFFB066" FontSize="12" VerticalAlignment="Center"/><ProgressBar Name="pDisk" Grid.Row="3" Grid.Column="1" Height="6" Maximum="100" Foreground="#FFFFA040" Background="#22FFFFFF" BorderThickness="0"/><TextBlock Name="vDisk" Grid.Row="3" Grid.Column="2" Foreground="White" FontSize="12" Margin="10,0,0,0" VerticalAlignment="Center"/>
      </Grid>
      <StackPanel Grid.Column="1" VerticalAlignment="Center">
       <TextBlock Name="tSrvTitle" Text="SYSTEM" Foreground="#FFC79BFF" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,6"/>
@@ -149,22 +151,33 @@ $xaml=@'
 </Window>
 '@
 $w=[Windows.Markup.XamlReader]::Parse($xaml)
-$c=@{}; 'musicBox','sepMusic','calBox','wkBox','sepTime','timeBox','sepSys','sysBox','clSep','clBox','ring5','ring7','a5V','a7V','tSrvTitle','fLS','fRS','shT','pgS','fL','fR','isl','cmp','pg','p0','p1','p2','p3','dots','dA','d1','d2','d3','aArt','aTitle','aArtist','aPos','aPrev','aPlay','aNext','aPin','bPin','aWeek','aMonth','aDate','aTime','aWx','aCpu','aCpuV','aRam','aRamV','aDisk','aDiskV','dot','cTime','cWx','cTrack','cArt','art','tTitle','tArtist','pPos','bPrev','bPlay','bNext','tTime','tWx','calM','cal','calD','calW','calX','pCpu','pRam','pDisk','vCpu','vRam','vDisk','tSrv','tSvc' | % { $c[$_]=$w.FindName($_) }
+$c=@{}; 'aGpuL','aGpu','aGpuV','pGpuL','pGpu','vGpu','musicBox','sepMusic','calBox','wkBox','sepTime','timeBox','sepSys','sysBox','clSep','clBox','ring5','ring7','a5V','a7V','tSrvTitle','fLS','fRS','shT','pgS','fL','fR','isl','cmp','pg','p0','p1','p2','p3','dots','dA','d1','d2','d3','aArt','aTitle','aArtist','aPos','aPrev','aPlay','aNext','aPin','bPin','aWeek','aMonth','aDate','aTime','aWx','aCpu','aCpuV','aRam','aRamV','aDisk','aDiskV','dot','cTime','cWx','cTrack','cArt','art','tTitle','tArtist','pPos','bPrev','bPlay','bNext','tTime','tWx','calM','cal','calD','calW','calX','pCpu','pRam','pDisk','vCpu','vRam','vDisk','tSrv','tSvc' | % { $c[$_]=$w.FindName($_) }
 # --- settings: which widgets / pages are shown (settings.json; default = everything on)
-$wMusic=On 'widgets' 'music'; $wWx=On 'widgets' 'weather'
-$spec=@( @('musicBox',$wMusic,330,$null), @('wkBox',(On 'widgets' 'calendar'),200,'sepMusic'), @('timeBox',(On 'widgets' 'clock'),120,'sepTime'), @('sysBox',(On 'widgets' 'system'),190,'sepSys'), @('clBox',$script:hasClaude,91,'clSep') )
-$any=$false; $sumW=0
-foreach($b in $spec){ $on=[bool]$b[1]; $c[$b[0]].Visibility=$(if($on){'Visible'}else{'Collapsed'})
-  if($b[3]){ $sepOn=($on -and $any); $c[$b[3]].Visibility=$(if($sepOn){'Visible'}else{'Collapsed'}); if($sepOn){ $sumW+=29 } }
-  if($on){ $any=$true; $sumW+=$b[2] } }
-$w0=[math]::Max(380,$sumW+83)
-if(-not $wMusic){ $c.cArt.Visibility='Collapsed'; $c.cTrack.Visibility='Collapsed' }
-if(-not (On 'widgets' 'pin')){ $c.aPin.Visibility='Collapsed'; $c.bPin.Visibility='Collapsed' }
-$script:order=@(0,1,2,3) | ? { $k=@('all','music','calendar','server')[$_]; On 'pages' $k }
-if(-not $script:order){ $script:order=@(0) }
-$script:order=@($script:order)
-$dd=@($c.dA,$c.d1,$c.d2,$c.d3); 0..3 | % { if($script:order -notcontains $_){ $dd[$_].Visibility='Collapsed' } }
-if($script:order.Count -lt 2){ $c.dots.Visibility='Collapsed' }
+$wMusic=On 'widgets' 'music'; $wWx=On 'widgets' 'weather'; $wGpu=On 'widgets' 'gpu'; $wSnip=On 'widgets' 'snip'
+$wIdle=(($set.widgets.idleplayer) -eq $true)    # show the player even when nothing is playing (default: hide it)
+$script:mus=$false; $script:musPrev=$null; $script:ready=$false; $w0=1010
+function Layout {
+  $others = (On 'widgets' 'calendar') -or (On 'widgets' 'clock') -or (On 'widgets' 'system') -or $script:hasClaude
+  $musOn = $wMusic -and ($script:mus -or $wIdle -or -not $others)
+  $spec=@( @('musicBox',$musOn,330,$null), @('wkBox',(On 'widgets' 'calendar'),200,'sepMusic'), @('timeBox',(On 'widgets' 'clock'),120,'sepTime'), @('sysBox',(On 'widgets' 'system'),190,'sepSys'), @('clBox',$script:hasClaude,91,'clSep') )
+  $any=$false; $sumW=0
+  foreach($b in $spec){ $on=[bool]$b[1]; $c[$b[0]].Visibility=$(if($on){'Visible'}else{'Collapsed'})
+    if($b[3]){ $sepOn=($on -and $any); $c[$b[3]].Visibility=$(if($sepOn){'Visible'}else{'Collapsed'}); if($sepOn){ $sumW+=29 } }
+    if($on){ $any=$true; $sumW+=$b[2] } }
+  $script:w0=[math]::Max(380,$sumW+83); $sizes[0]=@($script:w0,132)
+  $vis=$(if($musOn){'Visible'}else{'Collapsed'}); $c.cArt.Visibility=$vis; $c.cTrack.Visibility=$vis
+  foreach($n in 'aGpuL','aGpu','aGpuV','pGpuL','pGpu','vGpu'){ $c[$n].Visibility=$(if($wGpu){'Visible'}else{'Collapsed'}) }
+  $c.dot.Visibility=$(if(On 'pages' 'server'){'Visible'}else{'Collapsed'})
+  $cl=$(if(On 'widgets' 'clock'){'Visible'}else{'Collapsed'}); $c.tTime.Visibility=$cl; $c.cTime.Visibility=$cl
+  $wxv=$(if($wWx){'Visible'}else{'Collapsed'}); $c.tWx.Visibility=$wxv; $c.cWx.Visibility=$wxv; $c.aWx.Visibility=$wxv
+  $c.aPin.Visibility='Collapsed'; $c.bPin.Visibility='Collapsed'
+  $ord=@(0,1,2,3) | ? { $k=@('all','music','calendar','server')[$_]; (On 'pages' $k) -and ($_ -ne 1 -or $musOn -or $wIdle) }
+  if(-not $ord){ $ord=@(0) }; $script:order=@($ord)
+  $dd=@($c.dA,$c.d1,$c.d2,$c.d3); 0..3 | % { $dd[$_].Visibility=$(if($script:order -contains $_){'Visible'}else{'Collapsed'}) }
+  $c.dots.Visibility=$(if($script:order.Count -lt 2){'Collapsed'}else{'Visible'})
+  if($script:ready){
+    if($script:order -notcontains $script:page){ if($script:open){ Go $script:order[0] } else { Show-Page $script:order[0] } }
+    elseif($script:open -and $script:page -eq 0){ Anim $W_ $script:w0 300 $soft } } }
 function Step($d){ $o=$script:order; $k=[array]::IndexOf($o,$script:page); if($k -lt 0){$k=0}; $o[($k+$d+$o.Count)%$o.Count] }
 function Place { $a=[System.Windows.SystemParameters]::WorkArea; $w.Left=$a.Left+($a.Width-$w.Width)/2; $w.Top=$a.Top }
 Place
@@ -181,6 +194,9 @@ $ps=[powershell]::Create(); $ps.Runspace=$rs
       $os=Get-CimInstance Win32_OperatingSystem; $st.ram=[int](100*(1-$os.FreePhysicalMemory/$os.TotalVisibleMemorySize))
       $d=Get-PSDrive C; $st.disk=[int](100*$d.Used/($d.Used+$d.Free)) }catch{}
     try{ $st.up=[int]((Get-Date)-(Get-CimInstance Win32_OperatingSystem).LastBootUpTime).TotalMinutes }catch{}
+    try{ $g=(Get-CimInstance Win32_PerfFormattedData_GPUPerformanceCounters_GPUEngine -Filter "Name LIKE '%engtype_3D'" | Measure-Object UtilizationPercentage -Sum).Sum; if($g -ne $null){ $st.gpu=[int][math]::Min(100,$g) } }catch{}
+    if($n % 5 -eq 0){ if($null -eq $script:hasNv){ $script:hasNv=[bool](Get-Command nvidia-smi) }
+      if($script:hasNv){ try{ $r=(& nvidia-smi --query-gpu=temperature.gpu,utilization.gpu --format=csv,noheader,nounits) -split ',\s*'; $st.gtemp=[int]$r[0]; $st.gpu=[int]$r[1] }catch{} } }
     if($n % 7 -eq 0 -and $cfg.server.url){
       $hd=@{}; $hn=$(if($cfg.server.header){$cfg.server.header}else{'x-api-key'}); if($cfg.server.key){ $hd[$hn]=$cfg.server.key }
       try{ $st.srv=(Invoke-WebRequest -UseBasicParsing "$($cfg.server.url)" -Headers $hd -TimeoutSec 8).Content; $st.err=$false }catch{ $st.err=$true } }
@@ -195,7 +211,12 @@ Add-Type -Namespace U -Name K -MemberDefinition '[StructLayout(LayoutKind.Sequen
 # клик в любое место вне острова (в т.ч. по рабочему столу) — сворачиваем
 $script:wasDown=$false
 $tc=New-Object Windows.Threading.DispatcherTimer; $tc.Interval=[TimeSpan]::FromMilliseconds(60)
+$script:snipN=0
 $tc.Add_Tick({
+  if($wSnip){ $k=@(0x5B,0x5C,0x10,0x53,0x2C | % { ([U.K]::GetAsyncKeyState($_) -band 0x8000) -ne 0 })
+    $hot=((($k[0] -or $k[1]) -and $k[2] -and $k[3]) -or $k[4]); $script:snipN++
+    if($hot -or ($script:snipN % 3 -eq 0 -and [Diagnostics.Process]::GetProcessesByName('ScreenClippingHost').Count -gt 0)){ $script:snipUntil=(Get-Date).AddMilliseconds(900) }
+    $hide=($script:snipUntil -and (Get-Date) -lt $script:snipUntil); $w.Opacity=$(if($hide){0}else{1}) }
   $down=([U.K]::GetAsyncKeyState(1) -band 0x8000) -ne 0
   if($down -and -not $script:wasDown -and $script:open){
     $pt=New-Object U.K+PT; [void][U.K]::GetCursorPos([ref]$pt)
@@ -213,7 +234,7 @@ $spring=New-Object "$ns.BackEase"; $spring.Amplitude=0.14; $spring.EasingMode='E
 $soft=New-Object "$ns.CubicEase"; $soft.EasingMode='EaseInOut'
 $W_=[Windows.FrameworkElement]::WidthProperty; $H_=[Windows.FrameworkElement]::HeightProperty; $O_=[Windows.UIElement]::OpacityProperty
 $SX_=[Windows.Media.ScaleTransform]::ScaleXProperty; $SY_=[Windows.Media.ScaleTransform]::ScaleYProperty; $Y_=[Windows.Media.TranslateTransform]::YProperty
-$sizes=@( @($w0,132), @(580,152), @(560,224), @(560,160) ); $script:page=$script:order[0]; $script:open=$false
+$sizes=@( @($w0,132), @(580,152), @(560,224), @(560,170) ); Layout; $script:page=$script:order[0]; $script:open=$false
 function AnimR($prop,$to,$ms,$ease,$delay,$target){
   $a=New-Object "$ns.DoubleAnimation"; $a.To=$to; $a.Duration=[TimeSpan]::FromMilliseconds($ms); $a.BeginTime=[TimeSpan]::FromMilliseconds($delay); $a.EasingFunction=$ease; $a.AutoReverse=$true
   $target.BeginAnimation($prop,$a) }
@@ -290,13 +311,18 @@ function BuildWeek($n){ $c.aWeek.Children.Clear(); $mon=$n.Date.AddDays(-(([int]
     if($d -eq $n.Date){ $b.Background='#FF0A84FF'; $t.Foreground='White'; $t.FontWeight='SemiBold' } else { $t.Foreground=$(if($_ -ge 5){'#FFFF8A8A'}else{'#FFCFCFD8'}) }
     $b.Child=$t; [void]$sp.Children.Add($l); [void]$sp.Children.Add($b); [void]$c.aWeek.Children.Add($sp) } }
 function Stats { if($st.cpu -ne $null){ $cpu=$st.cpu;$ram=$st.ram;$disk=$st.disk
-  $c.pCpu.Value=$cpu;$c.vCpu.Text="$cpu%";$c.pRam.Value=$ram;$c.vRam.Text="$ram%";$c.pDisk.Value=$disk;$c.vDisk.Text="$disk%"; $c.aCpu.Value=$cpu;$c.aCpuV.Text="$cpu%";$c.aRam.Value=$ram;$c.aRamV.Text="$ram%";$c.aDisk.Value=$disk;$c.aDiskV.Text="$disk%" } }
-$script:lastTrack=''
+  $c.pCpu.Value=$cpu;$c.vCpu.Text="$cpu%";$c.pRam.Value=$ram;$c.vRam.Text="$ram%";$c.pDisk.Value=$disk;$c.vDisk.Text="$disk%"; $c.aCpu.Value=$cpu;$c.aCpuV.Text="$cpu%";$c.aRam.Value=$ram;$c.aRamV.Text="$ram%";$c.aDisk.Value=$disk;$c.aDiskV.Text="$disk%"
+  if($st.gpu -ne $null){ $g=[int]$st.gpu; $c.aGpu.Value=$g; $c.pGpu.Value=$g; $c.aGpuV.Text="$g%"; $c.vGpu.Text=$(if($st.gtemp){"$g% · $($st.gtemp)°"}else{"$g%"}) } else { $c.aGpuV.Text='--'; $c.vGpu.Text='--' } } }
+$script:lastTrack=''; $script:ly=''
 $geoPlay=[Windows.Media.Geometry]::Parse('M7,4 V20 L20,12 Z'); $geoPause=[Windows.Media.Geometry]::Parse('M6,4 H10 V20 H6 Z M14,4 H18 V20 H14 Z')
 function Tick {
+  $script:hasTitle=$false
   if($script:me -eq [IntPtr]::Zero){ $script:me=(New-Object Windows.Interop.WindowInteropHelper($w)).Handle }
   $fg=[U.P]::GetForegroundWindow(); if($fg -ne [IntPtr]::Zero -and $fg -ne $script:me){ $script:lastFg=$fg; PinState }
-  [U.P]::SetWindowPos($script:me,[IntPtr](-1),0,0,0,0,0x0013)|Out-Null   # остров всегда выше закреплённых окон
+  $ly='top'; try{ if(Test-Path "$dataDir\layer.txt"){ $ly=(Get-Content "$dataDir\layer.txt" -Raw).Trim() } }catch{}
+  if($ly -ne $script:ly){ $script:ly=$ly; $w.Topmost=($ly -eq 'top'); if($ly -eq 'normal'){ [U.P]::SetWindowPos($script:me,[IntPtr](-2),0,0,0,0,0x0013)|Out-Null } }
+  if($ly -eq 'top'){ [U.P]::SetWindowPos($script:me,[IntPtr](-1),0,0,0,0,0x0013)|Out-Null }       # above everything, even pinned windows
+  elseif($ly -eq 'desktop'){ [U.P]::SetWindowPos($script:me,[IntPtr](1),0,0,0,0,0x0013)|Out-Null } # only visible on the desktop
   if(Test-Path "$dataDir\cmd.txt"){ $q=(Get-Content "$dataDir\cmd.txt" -Raw).Trim(); Remove-Item "$dataDir\cmd.txt"; if($q -eq 'close'){ Collapse } elseif($q -match '^\d$'){ Show-Page ([int]$q); $script:open=$false; Expand; $hide.Stop() } }
   $n=Get-Date; $hm=$n.ToString('HH:mm'); $c.tTime.Text=$hm; $c.cTime.Text=$hm; $c.aTime.Text=$hm
   if($script:wkDay -ne $n.Date){ $script:wkDay=$n.Date; BuildCal $n; BuildWeek $n; $c.aMonth.Text=$n.ToString('MMMM yyyy',$ru); $c.aDate.Text=$n.ToString('ddd, d MMM',$ru); $c.calD.Text=$n.ToString('d MMMM',$ru); $c.calW.Text=$n.ToString('dddd',$ru) }
@@ -304,6 +330,7 @@ function Tick {
   if($s){
     $p=Await ($s.TryGetMediaPropertiesAsync()) ([Windows.Media.Control.GlobalSystemMediaTransportControlsSessionMediaProperties])
     if($p -and $p.Title){
+      $script:hasTitle=$true
       $c.tTitle.Text=$p.Title; $c.tArtist.Text=$p.Artist; $c.aTitle.Text=$p.Title; $c.aArtist.Text=$p.Artist; $c.cTrack.Text=$p.Title
       $k=$p.Title+$p.Artist
       if($k -ne $script:lastTrack){ $script:lastTrack=$k
@@ -317,6 +344,7 @@ function Tick {
     try{ $pl=($s.GetPlaybackInfo().PlaybackStatus -eq 'Playing'); $g=$(if($pl){$geoPause}else{$geoPlay}); $c.bPlay.Data=$g; $c.aPlay.Data=$g }catch{}
     try{ $tl=$s.GetTimelineProperties(); if($tl.EndTime.TotalSeconds -gt 0){ $c.pPos.Value=1000*$tl.Position.TotalSeconds/$tl.EndTime.TotalSeconds; $c.aPos.Value=$c.pPos.Value } }catch{}
   } else { $c.tTitle.Text=$TR.nothing; $c.aTitle.Text=$TR.nothing; $c.aArtist.Text=''; $c.tArtist.Text=''; $c.cTrack.Text=$TR.nothing }
+  $script:mus=$script:hasTitle; if($script:mus -ne $script:musPrev){ $script:musPrev=$script:mus; Layout }
 }
 # Optional Claude usage rings (5-hour and weekly limits). Shown only if the limits file exists —
 # see "Claude limits" in the README (claude-limits.cjs writes it from the Claude Code status line).
@@ -358,6 +386,6 @@ function Srv {
   }catch{ $c.tSrv.Text=$TR.noconn; $c.tSrv.Foreground='#FFFF7A7A'; $c.dot.Fill='#FFFF5A5A' } }
 $t1=New-Object Windows.Threading.DispatcherTimer; $t1.Interval=[TimeSpan]::FromSeconds(2); $t1.Add_Tick({ Tick }); $t1.Start()
 $t2=New-Object Windows.Threading.DispatcherTimer; $t2.Interval=[TimeSpan]::FromSeconds(3); $t2.Add_Tick({ Srv; Wx; Lim; if($script:open){ Stats } }); $t2.Start()
-Tick; Srv; Wx; Lim
+Tick; Srv; Wx; Lim; $script:ready=$true
 $w.Add_ContentRendered({ $d=New-Object System.Windows.Media.Animation.DoubleAnimation; $d.To=0; $d.Duration=[TimeSpan]::FromMilliseconds(700); $d.EasingFunction=$spring; $c.shT.BeginAnimation($Y_,$d) })
 $null=$w.ShowDialog()

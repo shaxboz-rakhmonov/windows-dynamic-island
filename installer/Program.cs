@@ -26,7 +26,7 @@ static class L
 
 static class App
 {
-    public const string Ver = "2.0.0";
+    public const string Ver = "2.1.0";
     public const string Repo = "shaxboz-rakhmonov/windows-dynamic-island";
     public const string AssetName = "DynamicIsland-Setup.exe";
     public static string InstallDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DynamicIsland");
@@ -94,9 +94,11 @@ class Settings
         new[]{"calendar","Календарь на неделю","Week calendar"},
         new[]{"clock","Часы и дата","Clock and date"},
         new[]{"weather","Погода","Weather"},
-        new[]{"system","Нагрузка ПК (CPU, RAM, диск)","PC load (CPU, RAM, disk)"},
+        new[]{"system","Нагрузка ПК (процессор, память, диск)","PC load (CPU, RAM, disk)"},
+        new[]{"gpu","Видеокарта (загрузка и температура)","Graphics card (load, temperature)"},
         new[]{"claude","Лимиты Claude (кружки)","Claude limits (rings)"},
-        new[]{"pin","Кнопка «Закрепить окно»","\"Pin window\" button"}
+        new[]{"idleplayer","Показывать плеер, когда ничего не играет","Show the player even when nothing is playing"},
+        new[]{"snip","Прятать остров во время скриншота","Hide the island while taking a screenshot"}
     };
     public static readonly string[][] Pages = {
         new[]{"all","Страница «Всё в одном»","\"All in one\" page"},
@@ -107,7 +109,7 @@ class Settings
     public Dictionary<string, bool> V = new Dictionary<string, bool>();
     static string File_ { get { return Path.Combine(App.InstallDir, "settings.json"); } }
 
-    public bool Get(string grp, string key) { bool b; return V.TryGetValue(grp + "." + key, out b) ? b : true; }
+    public bool Get(string grp, string key) { bool b; return V.TryGetValue(grp + "." + key, out b) ? b : key != "idleplayer"; }
 
     public static Settings Load()
     {
@@ -307,6 +309,18 @@ class SettingsWindow : Window
         var h2 = UI.Text(L.T("Запуск", "Startup"), 15, UI.Fg, true); h2.Margin = new Thickness(0, 12, 0, 8); root.Children.Add(h2);
         var auto = new CheckBox { Content = L.T("Запускать вместе с Windows", "Start with Windows"), IsChecked = App.Autostart, Foreground = UI.Fg, FontSize = 14, Margin = new Thickness(2, 3, 0, 3) };
         root.Children.Add(auto);
+        var pr = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 14, 0, 0) };
+        pr.Children.Add(UI.Text(L.T("Быстро: ", "Presets: "), 13, UI.Dim, false));
+        Action<string, string, string[]> preset = (ru, en, on) =>
+        {
+            var b = UI.Btn(L.T(ru, en), false); b.Padding = new Thickness(12, 5, 12, 5); b.FontSize = 12;
+            b.Click += delegate { foreach (var kv in boxes) kv.Value.IsChecked = on.Contains(kv.Key) || kv.Key == "widgets.snip"; };
+            pr.Children.Add(b);
+        };
+        preset("Всё", "Everything", boxes.Keys.Where(k => k != "widgets.idleplayer").ToArray());
+        preset("Только музыка", "Music only", new[] { "widgets.music", "widgets.idleplayer", "pages.music" });
+        preset("Только часы", "Clock only", new[] { "widgets.clock", "pages.all" });
+        root.Children.Add(pr);
         var ver = UI.Text(L.T("Версия ", "Version ") + App.Ver, 11, UI.Dim, false); ver.Margin = new Thickness(0, 16, 0, 0); root.Children.Add(ver);
         var row = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0, 14, 0, 0) };
         var save = UI.Btn(L.T("Сохранить", "Save"), true); var cancel = UI.Btn(L.T("Отмена", "Cancel"), false);
@@ -388,6 +402,20 @@ static class Tray
         ni = new WF.NotifyIcon { Icon = new System.Drawing.Icon(App.Res("app.ico")), Visible = true, Text = "Dynamic Island" };
         var menu = new WF.ContextMenuStrip();
         menu.Items.Add(L.T("Настройки…", "Settings…"), null, (s, e) => OpenSettings());
+        var lay = new WF.ToolStripMenuItem(L.T("Расположение острова", "Island position"));
+        var opts = new[] { new[] { "top", "Поверх всех окон", "Always on top" }, new[] { "normal", "Как обычное окно", "Like a normal window" }, new[] { "desktop", "Только на рабочем столе", "Desktop only" } };
+        foreach (var o in opts)
+        {
+            var key = o[0]; var it = new WF.ToolStripMenuItem(L.T(o[1], o[2])) { Tag = key };
+            it.Click += (s, e) => { try { File.WriteAllText(Path.Combine(App.InstallDir, "layer.txt"), key); } catch { } };
+            lay.DropDownItems.Add(it);
+        }
+        lay.DropDownOpening += (s, e) =>
+        {
+            string cur = "top"; try { cur = File.ReadAllText(Path.Combine(App.InstallDir, "layer.txt")).Trim(); } catch { }
+            foreach (WF.ToolStripMenuItem it in lay.DropDownItems) it.Checked = (string)it.Tag == cur;
+        };
+        menu.Items.Add(lay);
         menu.Items.Add(L.T("Проверить обновления", "Check for updates"), null, (s, e) => CheckUpdate(true));
         menu.Items.Add(L.T("Перезапустить остров", "Restart island"), null, (s, e) => ThreadPool.QueueUserWorkItem(_ => App.RestartIsland()));
         menu.Items.Add("-");

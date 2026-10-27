@@ -45,7 +45,10 @@
 
 <div align="center"><img src="installer/logo.png" alt="logo" width="96"></div>
 
-- **Settings** — right-click the tray icon → *Settings*: tick what the island shows (music, calendar, clock, weather, PC load, Claude limits, pin button) and which pages it has. Don't have Claude? Untick it.
+- **Settings** — right-click the tray icon → *Settings*: tick what the island shows (music, calendar, clock, weather, PC load, graphics card, Claude limits) and which pages it has. Presets: *Everything / Music only / Clock only*. Don't have Claude? Untick it.
+- **Island position** — tray icon → *Island position*: *Always on top* · *Like a normal window* · *Desktop only*.
+- The island hides itself while you take a screenshot (Win+Shift+S / PrintScreen) and the player is hidden when nothing is playing (both can be changed in Settings).
+- **PC load** — CPU, RAM, graphics card (load; temperature on NVIDIA) and disk of *your own* computer.
 - **Updates** — the app checks GitHub itself. When a new version is out you get a card *"Update available → Update"*: one click downloads and installs it (your settings are kept).
 - **Uninstall** — Windows *Settings → Apps*, or tray → run `DynamicIsland.exe --uninstall`.
 - Windows SmartScreen may warn about an unknown publisher the first time (the app is not code-signed): *More info → Run anyway*. The source is in `installer/` — build it yourself with `installer/build.ps1`.
