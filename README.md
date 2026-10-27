@@ -38,6 +38,20 @@
 
 ## 🚀 Install (30 seconds)
 
+### 📦 The easy way: the installer (recommended)
+
+1. Download **[DynamicIsland-Setup.exe](../../releases/latest/download/DynamicIsland-Setup.exe)** from the [latest release](../../releases/latest).
+2. Run it and press **Install**. That's all — the island appears at the top of the screen, an icon appears in the tray (bottom right).
+
+<div align="center"><img src="installer/logo.png" alt="logo" width="96"></div>
+
+- **Settings** — right-click the tray icon → *Settings*: tick what the island shows (music, calendar, clock, weather, PC load, Claude limits, pin button) and which pages it has. Don't have Claude? Untick it.
+- **Updates** — the app checks GitHub itself. When a new version is out you get a card *"Update available → Update"*: one click downloads and installs it (your settings are kept).
+- **Uninstall** — Windows *Settings → Apps*, or tray → run `DynamicIsland.exe --uninstall`.
+- Windows SmartScreen may warn about an unknown publisher the first time (the app is not code-signed): *More info → Run anyway*. The source is in `installer/` — build it yourself with `installer/build.ps1`.
+
+### 🧩 Or without the installer (PowerShell)
+
 1. [Download the ZIP](../../archive/refs/heads/main.zip) and unpack it somewhere permanent, e.g. `C:\Tools\DynamicIsland`.
 2. Open PowerShell in that folder and run:
 

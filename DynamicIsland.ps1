@@ -7,11 +7,14 @@ $script:mx=New-Object Threading.Mutex($false,'Local\WinDynamicIsland'); if(-not 
 $script:lastTrack=''
 $cfg = $null; try{ $cfg = Get-Content "$PSScriptRoot\config.json" -Raw | ConvertFrom-Json }catch{}
 if(-not $cfg){ $cfg = [pscustomobject]@{} }
+# settings.json — what to show (written by the settings window of the EXE; every key optional, default = on)
+$set = $null; try{ $set = Get-Content "$PSScriptRoot\settings.json" -Raw | ConvertFrom-Json }catch{}
+function On($grp,$key){ try{ $v=$set.$grp.$key; if($v -eq $null){ $true } else { [bool]$v } }catch{ $true } }
 $ru = (Get-UICulture).Name -like 'ru*'
 $TR = @{ nothing=$(if($ru){$TR.nothing}else{'Nothing playing'}); sys=$(if($ru){'СИСТЕМА'}else{'SYSTEM'}); wind=$(if($ru){'ветер'}else{'wind'}); ms=$(if($ru){'м/с'}else{'m/s'}); up=$(if($ru){'Работает'}else{'Uptime'}); d=$(if($ru){'д'}else{'d'}); h=$(if($ru){'ч'}else{'h'}); noconn=$(if($ru){'нет связи с сервером'}else{'server unreachable'}); load=$(if($ru){'Нагрузка'}else{'CPU'}); mem=$(if($ru){'память'}else{'RAM'}); disk=$(if($ru){'диск'}else{'disk'}); errs=$(if($ru){'Ошибок'}else{'Errors'}) }
 $dataDir = $PSScriptRoot
 $limFile = $(if($cfg.claude.limitsFile){ $cfg.claude.limitsFile } else { Join-Path $env:USERPROFILE '.claude\island-limits.json' })
-$script:hasClaude = (Test-Path $limFile) -or (Test-Path (Join-Path $env:USERPROFILE '.claude'))
+$script:hasClaude = ((Test-Path $limFile) -or (Test-Path (Join-Path $env:USERPROFILE '.claude'))) -and (On 'widgets' 'claude')
 # --- музыка (WinRT: что играет в системе)
 $null=[Windows.Media.Control.GlobalSystemMediaTransportControlsSessionManager,Windows.Media.Control,ContentType=WindowsRuntime]
 $null=[Windows.Storage.Streams.DataReader,Windows.Storage.Streams,ContentType=WindowsRuntime]
@@ -42,7 +45,7 @@ $xaml=@'
    <Grid Name="pg" Opacity="0" RenderTransformOrigin="0.5,0.1" Margin="22,16,22,26" IsHitTestVisible="False"><Grid.RenderTransform><ScaleTransform x:Name="pgS" ScaleX="0.96" ScaleY="0.96"/></Grid.RenderTransform>
     <Grid Name="p0">
      <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Width="330">
+     <StackPanel Name="musicBox" Orientation="Horizontal" VerticalAlignment="Center" Width="330">
       <Border Name="aArt" Width="80" Height="80" CornerRadius="12"><Border.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,1"><GradientStop Color="#FF3A2A6B" Offset="0"/><GradientStop Color="#FF0F6B8F" Offset="1"/></LinearGradientBrush></Border.Background><TextBlock Text="♪" FontSize="30" Foreground="#AAFFFFFF" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
       <StackPanel Margin="14,0,0,0" VerticalAlignment="Center" Width="230">
        <TextBlock Name="aTitle" Text="Nothing playing" Foreground="White" FontSize="15" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" FontFamily="Segoe UI"/>
@@ -56,21 +59,21 @@ $xaml=@'
        </StackPanel>
       </StackPanel>
      </StackPanel>
-     <Rectangle Grid.Column="1" Width="1" Fill="#33FFFFFF" Margin="14,6"/>
-     <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-      <StackPanel VerticalAlignment="Center" Width="200">
+     <Rectangle Name="sepMusic" Grid.Column="1" Width="1" Fill="#33FFFFFF" Margin="14,6"/>
+     <StackPanel Name="calBox" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+      <StackPanel Name="wkBox" VerticalAlignment="Center" Width="200">
        <TextBlock Name="aMonth" Foreground="#FF8E8E99" FontSize="12" HorizontalAlignment="Center" Margin="0,0,0,4" FontFamily="Segoe UI"/>
        <UniformGrid Name="aWeek" Columns="7"/>
       </StackPanel>
-      <Rectangle Width="1" Fill="#33FFFFFF" Margin="14,6"/>
-      <StackPanel VerticalAlignment="Center" Width="120">
+      <Rectangle Name="sepTime" Width="1" Fill="#33FFFFFF" Margin="14,6"/>
+      <StackPanel Name="timeBox" VerticalAlignment="Center" Width="120">
        <TextBlock Name="aTime" Foreground="White" FontSize="38" FontWeight="Light" HorizontalAlignment="Center" FontFamily="Segoe UI"/>
        <TextBlock Name="aDate" Foreground="#FF8E8E99" FontSize="12" HorizontalAlignment="Center" FontFamily="Segoe UI"/>
        <TextBlock Name="aWx" Foreground="#FFB9B9C4" FontSize="12" HorizontalAlignment="Center" Margin="0,3,0,0" FontFamily="Segoe UI Emoji, Segoe UI"/>
       </StackPanel>
      </StackPanel>
-     <Rectangle Grid.Column="3" Width="1" Fill="#33FFFFFF" Margin="14,6"/>
-     <Grid Grid.Column="4" VerticalAlignment="Center" Width="190">
+     <Rectangle Name="sepSys" Grid.Column="3" Width="1" Fill="#33FFFFFF" Margin="14,6"/>
+     <Grid Name="sysBox" Grid.Column="4" VerticalAlignment="Center" Width="190">
       <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
       <Grid.RowDefinitions><RowDefinition Height="24"/><RowDefinition Height="24"/><RowDefinition Height="24"/></Grid.RowDefinitions>
       <TextBlock Text="CPU" Foreground="#FF6FB1FF" FontSize="11" Margin="0,0,8,0" VerticalAlignment="Center"/><ProgressBar Name="aCpu" Grid.Column="1" Height="5" Maximum="100" Foreground="#FF4C9EFF" Background="#22FFFFFF" BorderThickness="0"/><TextBlock Name="aCpuV" Grid.Column="2" Foreground="White" FontSize="11" Margin="8,0,0,0" VerticalAlignment="Center"/>
@@ -146,14 +149,30 @@ $xaml=@'
 </Window>
 '@
 $w=[Windows.Markup.XamlReader]::Parse($xaml)
-$c=@{}; 'clSep','clBox','ring5','ring7','a5V','a7V','tSrvTitle','fLS','fRS','shT','pgS','fL','fR','isl','cmp','pg','p0','p1','p2','p3','dots','dA','d1','d2','d3','aArt','aTitle','aArtist','aPos','aPrev','aPlay','aNext','aPin','bPin','aWeek','aMonth','aDate','aTime','aWx','aCpu','aCpuV','aRam','aRamV','aDisk','aDiskV','dot','cTime','cWx','cTrack','cArt','art','tTitle','tArtist','pPos','bPrev','bPlay','bNext','tTime','tWx','calM','cal','calD','calW','calX','pCpu','pRam','pDisk','vCpu','vRam','vDisk','tSrv','tSvc' | % { $c[$_]=$w.FindName($_) }
+$c=@{}; 'musicBox','sepMusic','calBox','wkBox','sepTime','timeBox','sepSys','sysBox','clSep','clBox','ring5','ring7','a5V','a7V','tSrvTitle','fLS','fRS','shT','pgS','fL','fR','isl','cmp','pg','p0','p1','p2','p3','dots','dA','d1','d2','d3','aArt','aTitle','aArtist','aPos','aPrev','aPlay','aNext','aPin','bPin','aWeek','aMonth','aDate','aTime','aWx','aCpu','aCpuV','aRam','aRamV','aDisk','aDiskV','dot','cTime','cWx','cTrack','cArt','art','tTitle','tArtist','pPos','bPrev','bPlay','bNext','tTime','tWx','calM','cal','calD','calW','calX','pCpu','pRam','pDisk','vCpu','vRam','vDisk','tSrv','tSvc' | % { $c[$_]=$w.FindName($_) }
+# --- settings: which widgets / pages are shown (settings.json; default = everything on)
+$wMusic=On 'widgets' 'music'; $wWx=On 'widgets' 'weather'
+$spec=@( @('musicBox',$wMusic,330,$null), @('wkBox',(On 'widgets' 'calendar'),200,'sepMusic'), @('timeBox',(On 'widgets' 'clock'),120,'sepTime'), @('sysBox',(On 'widgets' 'system'),190,'sepSys'), @('clBox',$script:hasClaude,91,'clSep') )
+$any=$false; $sumW=0
+foreach($b in $spec){ $on=[bool]$b[1]; $c[$b[0]].Visibility=$(if($on){'Visible'}else{'Collapsed'})
+  if($b[3]){ $sepOn=($on -and $any); $c[$b[3]].Visibility=$(if($sepOn){'Visible'}else{'Collapsed'}); if($sepOn){ $sumW+=29 } }
+  if($on){ $any=$true; $sumW+=$b[2] } }
+$w0=[math]::Max(380,$sumW+83)
+if(-not $wMusic){ $c.cArt.Visibility='Collapsed'; $c.cTrack.Visibility='Collapsed' }
+if(-not (On 'widgets' 'pin')){ $c.aPin.Visibility='Collapsed'; $c.bPin.Visibility='Collapsed' }
+$script:order=@(0,1,2,3) | ? { $k=@('all','music','calendar','server')[$_]; On 'pages' $k }
+if(-not $script:order){ $script:order=@(0) }
+$script:order=@($script:order)
+$dd=@($c.dA,$c.d1,$c.d2,$c.d3); 0..3 | % { if($script:order -notcontains $_){ $dd[$_].Visibility='Collapsed' } }
+if($script:order.Count -lt 2){ $c.dots.Visibility='Collapsed' }
+function Step($d){ $o=$script:order; $k=[array]::IndexOf($o,$script:page); if($k -lt 0){$k=0}; $o[($k+$d+$o.Count)%$o.Count] }
 function Place { $a=[System.Windows.SystemParameters]::WorkArea; $w.Left=$a.Left+($a.Width-$w.Width)/2; $w.Top=$a.Top }
 Place
 
 # --- фоновый сборщик: тяжёлые опросы вне окна, чтобы анимация не подвисала
 $script:st=[hashtable]::Synchronized(@{})
 $rs=[runspacefactory]::CreateRunspace(); $rs.ApartmentState='MTA'; $rs.Open()
-$rs.SessionStateProxy.SetVariable('st',$script:st); $rs.SessionStateProxy.SetVariable('cfg',$cfg)
+$rs.SessionStateProxy.SetVariable('st',$script:st); $rs.SessionStateProxy.SetVariable('cfg',$cfg); $rs.SessionStateProxy.SetVariable('wxOn',$wWx)
 $ps=[powershell]::Create(); $ps.Runspace=$rs
 [void]$ps.AddScript({
   $ErrorActionPreference='SilentlyContinue'; $n=0
@@ -165,7 +184,7 @@ $ps=[powershell]::Create(); $ps.Runspace=$rs
     if($n % 7 -eq 0 -and $cfg.server.url){
       $hd=@{}; $hn=$(if($cfg.server.header){$cfg.server.header}else{'x-api-key'}); if($cfg.server.key){ $hd[$hn]=$cfg.server.key }
       try{ $st.srv=(Invoke-WebRequest -UseBasicParsing "$($cfg.server.url)" -Headers $hd -TimeoutSec 8).Content; $st.err=$false }catch{ $st.err=$true } }
-    if($n % 200 -eq 0){
+    if($n % 200 -eq 0 -and $wxOn){
       try{ if($cfg.weather.lat){ $lat=$cfg.weather.lat; $lon=$cfg.weather.lon; $st.city=$cfg.weather.city }
            else{ $g=Invoke-RestMethod 'https://ipwho.is/' -TimeoutSec 8; $lat=$g.latitude; $lon=$g.longitude; $st.city=$g.city }
            $o=(Invoke-RestMethod "https://api.open-meteo.com/v1/forecast?latitude=$lat&longitude=$lon&current=temperature_2m,weather_code,wind_speed_10m,is_day&wind_speed_unit=ms" -TimeoutSec 8).current
@@ -194,7 +213,7 @@ $spring=New-Object "$ns.BackEase"; $spring.Amplitude=0.14; $spring.EasingMode='E
 $soft=New-Object "$ns.CubicEase"; $soft.EasingMode='EaseInOut'
 $W_=[Windows.FrameworkElement]::WidthProperty; $H_=[Windows.FrameworkElement]::HeightProperty; $O_=[Windows.UIElement]::OpacityProperty
 $SX_=[Windows.Media.ScaleTransform]::ScaleXProperty; $SY_=[Windows.Media.ScaleTransform]::ScaleYProperty; $Y_=[Windows.Media.TranslateTransform]::YProperty
-$sizes=@( @($(if($script:hasClaude){1130}else{1010}),132), @(580,152), @(560,224), @(560,160) ); $script:page=0; $script:open=$false
+$sizes=@( @($w0,132), @(580,152), @(560,224), @(560,160) ); $script:page=$script:order[0]; $script:open=$false
 function AnimR($prop,$to,$ms,$ease,$delay,$target){
   $a=New-Object "$ns.DoubleAnimation"; $a.To=$to; $a.Duration=[TimeSpan]::FromMilliseconds($ms); $a.BeginTime=[TimeSpan]::FromMilliseconds($delay); $a.EasingFunction=$ease; $a.AutoReverse=$true
   $target.BeginAnimation($prop,$a) }
@@ -221,7 +240,7 @@ function Collapse { if(-not $script:open){return}; $script:open=$false
   try{ Goo $false }catch{ "$($_.Exception.Message) @$($_.InvocationInfo.ScriptLineNumber)" | Out-File $dataDir\err.log -Append }
   $cr=New-Object Windows.Threading.DispatcherTimer; $cr.Interval=[TimeSpan]::FromMilliseconds(380); $cr.Add_Tick({ $cr.Stop(); if(-not $script:open){ $c.isl.CornerRadius=[Windows.CornerRadius]::new(0,0,17,17) } }); $cr.Start() }
 $script:busy=[DateTime]::MinValue
-function Go($i){ if(((Get-Date)-$script:busy).TotalMilliseconds -lt 380){return}; $script:busy=Get-Date; if($i -lt 0){$i=3}; if($i -gt 3){$i=0}; if($i -eq $script:page -and $script:open){return}
+function Go($i){ if(((Get-Date)-$script:busy).TotalMilliseconds -lt 380){return}; $script:busy=Get-Date; if($script:order -notcontains $i){ return }; if($i -eq $script:page -and $script:open){return}
   if(-not $script:open){ Show-Page $i; return }
   Anim $O_ 0 90 $soft 0 $c.pg; Anim $SX_ 0.94 90 $soft 0 $c.pgS; Anim $SY_ 0.94 90 $soft 0 $c.pgS
   $sw=New-Object Windows.Threading.DispatcherTimer; $sw.Interval=[TimeSpan]::FromMilliseconds(100)
@@ -229,12 +248,12 @@ function Go($i){ if(((Get-Date)-$script:busy).TotalMilliseconds -lt 380){return}
 $hide=New-Object Windows.Threading.DispatcherTimer; $hide.Interval=[TimeSpan]::FromSeconds(1.2); $hide.Add_Tick({ $hide.Stop(); Collapse })
 $c.isl.Add_MouseEnter({ $hide.Stop(); Expand })
 $c.isl.Add_MouseLeave({ $hide.Stop(); $hide.Interval=[TimeSpan]::FromSeconds(1.2); $hide.Start() })
-$c.isl.Add_MouseWheel({ if($script:open){ if($_.Delta -lt 0){ Go ($script:page+1) } else { Go ($script:page-1) } } })
+$c.isl.Add_MouseWheel({ if($script:open){ if($_.Delta -lt 0){ Go (Step 1) } else { Go (Step -1) } } })
 $script:dx=$null
 $c.isl.Add_MouseLeftButtonDown({ $script:dx=$_.GetPosition($c.isl).X })
 $c.isl.Add_MouseLeftButtonUp({ $script:dx=$null })
 $c.isl.Add_MouseMove({ if($script:dx -ne $null -and $_.LeftButton -eq 'Pressed' -and $script:open){ $x=$_.GetPosition($c.isl).X
-  if($x-$script:dx -gt 70){ $script:dx=$x; Go ($script:page-1) } elseif($script:dx-$x -gt 70){ $script:dx=$x; Go ($script:page+1) } } })
+  if($x-$script:dx -gt 70){ $script:dx=$x; Go (Step -1) } elseif($script:dx-$x -gt 70){ $script:dx=$x; Go (Step 1) } } })
 $c.dA.Add_MouseLeftButtonUp({ Go 0 }); $c.d1.Add_MouseLeftButtonUp({ Go 1 }); $c.d2.Add_MouseLeftButtonUp({ Go 2 }); $c.d3.Add_MouseLeftButtonUp({ Go 3 })
 function Peek($sec){ Expand; $hide.Stop(); $hide.Interval=[TimeSpan]::FromSeconds($sec); $hide.Start() }
 function Sess { if($mgr){ $mgr.GetCurrentSession() } }
@@ -301,7 +320,6 @@ function Tick {
 }
 # Optional Claude usage rings (5-hour and weekly limits). Shown only if the limits file exists —
 # see "Claude limits" in the README (claude-limits.cjs writes it from the Claude Code status line).
-if($script:hasClaude){ $c.clSep.Visibility='Visible'; $c.clBox.Visibility='Visible' }
 function Ring($n,$pc){ $e=$c["ring$n"]; $f=[math]::Max(0.001,$pc/100*[math]::PI*50/6)
   $e.StrokeDashArray=[Windows.Media.DoubleCollection]::new([double[]]@($f,100)); $c["a${n}V"].Text="$pc%"
   $col=if($pc -ge 100){'#FFFF5A5A'}elseif($pc -ge 90){'#FFFFA040'}elseif($pc -ge 70){'#FFFBBF24'}else{'#FF34D399'}
@@ -320,6 +338,7 @@ function Lim {
       else { $c["a${n}V"].Text='--'; $c["ring$n"].StrokeDashArray=[Windows.Media.DoubleCollection]::new([double[]]@(0.001,100)) } }
   }catch{ $c.a5V.Text='--'; $c.a7V.Text='--' } }
 function Wx {
+  if(-not $wWx){ return }
   try{ if(-not $st.wx){ return }; $r=$st.wx | ConvertFrom-Json
     $k=[int]$r.code; $ic=if($k -eq 0){if($r.isDay){'☀'}else{'🌙'}}elseif($k -le 2){'⛅'}elseif($k -eq 3){'☁'}elseif($k -ge 95){'⛈'}elseif(($k -ge 71 -and $k -le 77) -or ($k -ge 85 -and $k -le 86)){'❄'}elseif($k -ge 45 -and $k -le 48){'🌫'}else{'🌧'}
     $t=[math]::Round([double]$r.temp); $tx=("{0}{1}°" -f $(if($t -gt 0){'+'}else{''}),$t)
